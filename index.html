@@ -1,13 +1,5 @@
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KGA Market | Ma boutique</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#222}
+fb;color:#222}
 header{background:#087a45;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 header h1{margin:0;font-size:25px}
 header button{background:white;color:#087a45}
@@ -24,7 +16,15 @@ h2.section-title{color:#087a45;margin-top:30px}
 .card,.panel{background:white;padding:18px;border-radius:12px;box-shadow:0 3px 12px #0000000d}
 .product-icon{font-size:48px;text-align:center;background:#eef8f1;padding:18px;border-radius:10px}
 .card h3{margin-bottom:8px}
-.price{font-weight:bold;color:#087a45;font-size:19px}
+.price{font-weight:bold;color:#087a45<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KGA Market | Ma boutique</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7;font-size:19px}
 .card button{width:100%;margin-top:8px}
 .panel{margin-top:24px}
 .cart-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
@@ -99,10 +99,34 @@ footer{margin-top:35px;background:#123b2a;color:white;text-align:center;padding:
           <input id="telephone" required type="tel" maxlength="20" placeholder="Ex. 07XXXXXXXX">
         </div>
         <div>
-          <label for="ville">Ville *</label>
-          <input id="ville" required maxlength="100" placeholder="Ex. Bouaké">
-        </div>
-        <div>
+        <label for="ville">Commune ou ville *</label>
+<select id="ville" required>
+  <option value="">Choisir une destination</option>
+  <optgroup label="Communes d'Abidjan">
+    <option value="Abobo">Abobo</option>
+    <option value="Adjamé">Adjamé</option>
+    <option value="Anyama">Anyama</option>
+    <option value="Attécoubé">Attécoubé</option>
+    <option value="Bingerville">Bingerville</option>
+    <option value="Cocody">Cocody</option>
+    <option value="Koumassi">Koumassi</option>
+    <option value="Marcory">Marcory</option>
+    <option value="Plateau">Plateau</option>
+    <option value="Port-Bouët">Port-Bouët</option>
+    <option value="Treichville">Treichville</option>
+    <option value="Yopougon">Yopougon</option>
+    <option value="Songon">Songon</option>
+  </optgroup>
+  <optgroup label="Autres villes de Côte d'Ivoire">
+    <option value="Bouaké">Bouaké</option>
+    <option value="Yamoussoukro">Yamoussoukro</option>
+    <option value="Daloa">Daloa</option>
+    <option value="Korhogo">Korhogo</option>
+    <option value="San-Pédro">San-Pédro</option>
+    <option value="Man">Man</option>
+  </optgroup>
+</select>
+</div>
           <label for="livraison">Mode de réception *</label>
           <select id="livraison" required>
             <option value="">Choisir une option</option>
@@ -253,7 +277,7 @@ document.getElementById("formulaire-commande").addEventListener("submit",functio
 
   const nom = document.getElementById("nom").value.trim();
   const telephone = document.getElementById("telephone").value.trim();
-  const ville = document.getElementById("ville").value.trim();
+  const ville = document.getElementById("ville").value;
   const livraison = document.getElementById("livraison").value;
   const adresse = document.getElementById("adresse").value.trim();
   const notes = document.getElementById("notes").value.trim();
@@ -263,24 +287,54 @@ document.getElementById("formulaire-commande").addEventListener("submit",functio
     return;
   }
 
-  const total = panier.reduce((s,p) => s+p.prix*p.quantite,0);
-  let message = "🛍️ *NOUVELLE COMMANDE — KGA MARKET*\\n\\n";
-  message += "*Client :* " + nom + "\\n";
+  const tarifsLivraison = {
+    "Abobo": 2500,
+    "Adjamé": 1500,
+    "Anyama": 2500,
+    "Attécoubé": 2000,
+    "Bingerville": 2500,
+    "Cocody": 2000,
+    "Koumassi": 2500,
+    "Marcory": 2000,
+    "Plateau": 2500,
+    "Port-Bouët": 2500,
+    "Treichville": 2000,
+    "Yopougon": 1500,
+    "Songon": 2000
+  };
+
+  if(tarifsLivraison[ville] === undefined){
+    alert("Les frais de livraison pour " + ville + " ne sont pas encore définis. Contacte la boutique sur WhatsApp pour les confirmer.");
+    return;
+  }
+
+  const totalProduits = panier.reduce((s,p) => s + p.prix * p.quantite, 0);
+  const fraisLivraison = tarifsLivraison[ville];
+  const totalCommande = totalProduits + fraisLivraison;
+
+ let message = "🛍️ *NOUVELLE COMMANDE — KGA MARKET*\n\n";
+message += "*Client :* " + nom + "\n";
   message += "*Téléphone :* " + telephone + "\\n";
-  message += "*Ville :* " + ville + "\\n";
+  message += "*Ville/commune :* " + ville + "\\n";
   message += "*Réception :* " + livraison + "\\n";
   message += "*Adresse/lieu :* " + adresse + "\\n\\n";
   message += "*PRODUITS COMMANDÉS*\\n";
 
   panier.forEach(p => {
-    message += "• " + p.nom + " × " + p.quantite + " = " + monnaie(p.prix*p.quantite) + " FCFA\\n";
+    message += "• " + p.nom + " × " + p.quantite + " = " + monnaie(p.prix * p.quantite) + " FCFA\\n";
   });
 
-  message += "\\n*TOTAL DES PRODUITS : " + monnaie(total) + " FCFA*\\n";
-  message += "Frais de livraison à confirmer.\\n";
-  if(notes) message += "\\n*Précisions :* " + notes + "\\n";
-  message += "\\nMerci de confirmer la disponibilité et les modalités de livraison.";
 
+  message += "\n*Total des produits : " + monnaie(totalProduits) + " FCFA*\n";
+  message += "*Frais de livraison : " + monnaie(fraisLivraison) + " FCFA*\n";
+  message += "*TOTAL À PAYER À LA RÉCEPTION : " + monnaie(totalCommande) + " FCFA*\n";
+  message += "\nLe paiement se fera à la réception.\n";
+
+  if(notes) message += "\n*Précisions :* " + notes + "\n";
+
+  message += "\nMerci de confirmer la commande et le délai de livraison.";
+
+ 
   ouvrirWhatsApp(message);
 });
 
